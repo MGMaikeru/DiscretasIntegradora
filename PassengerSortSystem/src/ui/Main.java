@@ -16,14 +16,13 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        System.out.println("<<<<< Bienvenido a medallas del mundo >>>>>");
+        System.out.println("<<<<< Passenger Sort System >>>>>");
         Main m = new Main();
-        //System.out.println(m.c.readJson());
         m.displayStartMenu();
     }
 
     public void displayStartMenu() {
-        System.out.print("1) Import archive\n2) \n3) \n4) \n5) Exit\nSelected: ");
+        System.out.print("1) Import archive\n2) Confirm passenger assistance \n3) \n4) \n5) Exit\nSelected: ");
         int option = input.nextInt();
         executeOption(option);
     }
@@ -35,10 +34,10 @@ public class Main {
 
                 break;
             case 2:
-
+                System.out.println(confirmPassenger());
                 break;
             case 3:
-
+                showOrderEntryLists();
                 break;
             case 4:
 
@@ -53,5 +52,16 @@ public class Main {
         if (option != 5)
             displayStartMenu();
 
+    }
+
+    public String confirmPassenger(){
+        System.out.println("Type the passenger ID: ");
+        input.nextLine();
+        String passengerID = input.nextLine();
+        return c.confirmAssistance(passengerID);
+    }
+
+    public void showOrderEntryLists(){
+        System.out.println(c.generateEntryList());
     }
 }
