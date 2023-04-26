@@ -1,22 +1,27 @@
 package model;
 
+import exception.EmptyFieldException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
-import java.awt.event.ComponentAdapter;
 import java.io.*;
 import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import static java.lang.Integer.parseInt;
 
 public class Controller {
     private HashMap<Passenger, String> table;
     private Heap<Passenger> entryOrder;
+    private Stack<Passenger> exitOrder;
 
     public Controller(){
         table = new HashMap<>(100);
         entryOrder = new Heap<>();
+        exitOrder = new Stack<>();
     }
 
     public String confirmAssistance(String id){
@@ -25,8 +30,9 @@ public class Controller {
             return "Passenger ID hasn't been find.";
         }
         passenger.confirmAssistance();
+        passenger.setConfirmationHour(getActuallyDate());
         addToEntryList(passenger);
-        return passenger.toString() + "\nPassenger has been confirmed assistance.\n";
+        return passenger + "\nPassenger has been confirmed assistance.\n";
     }
 
     public void addToEntryList(Passenger passenger){
@@ -34,13 +40,34 @@ public class Controller {
     }
 
     public String generateEntryList(){
-        String list = "";
-        list = entryOrder.printArray();
+        String list = entryOrder.printArray();
 
         if (!list.equals("")){
             return list;
         }
         return "There aren´t confirmed passengers yet";
+    }
+
+    public String addToExistList(){
+        int size = 0;
+        String list = "";
+        for (int i = 0; i < entryOrder.getArray().size(); i++){
+            exitOrder.push(new StackNode<>( entryOrder.getArray().get(i)) );
+            size++;
+        }
+
+        if (size == 0){
+            return "There aren´t confirmed passengers!";
+        }
+
+        try {
+            for (int i = 0; i < size; i++){
+                list += i + ") " + exitOrder.pop().toString() + "\n";
+            }
+        }catch (EmptyFieldException e){
+
+        }
+        return list;
     }
 
     public String importDataFromCSV(){
@@ -72,20 +99,29 @@ public class Controller {
         return "Successful import!";
     }
 
+    public String getActuallyDate() {
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR);
+        int minutes = calendar.get(Calendar.MINUTE);
+        int seconds = calendar.get(Calendar.SECOND);
+        return hour + ":" + minutes + ":"+seconds;
+    }
+
     private int calculatePriority(int age, String handicapped, String pregnancy, String section){
         int priority = 0;
         if (age<110 || age>12){
-            if (age > 60) {
-                priority += 5;
-            }
-            if (handicapped.equals("x")) {
-                priority += 3;
-            }
-            if (pregnancy.equals("x")) {
-                priority += 2;
-            }
+
             if (section.equals("FirstClass")){
                 priority += 60;
+                if (age > 60) {
+                    priority += 5;
+                }
+                if (handicapped.equals("x")) {
+                    priority += 3;
+                }
+                if (pregnancy.equals("x")) {
+                    priority += 2;
+                }
             }
             if (section.equals("BusinessClass")){
                 priority += 40;

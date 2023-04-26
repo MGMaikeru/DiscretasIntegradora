@@ -28,6 +28,10 @@ public class Heap<T extends Comparable<T>> {
         return list;
     }
 
+    public ArrayList<T> getArray(){
+        return array;
+    }
+
     public T heapExtractMax(){
         if (array.size() < 1) {
             System.out.println("heap underflow");

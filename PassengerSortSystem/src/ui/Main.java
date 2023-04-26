@@ -37,10 +37,10 @@ public class Main {
                 System.out.println(confirmPassenger());
                 break;
             case 3:
-                showOrderEntryLists();
+                showOrderEntryList();
                 break;
             case 4:
-
+                showOrderExistList();
                 break;
             case 5:
                 System.out.println("\nThanks for using the program. Until next time!");
@@ -61,7 +61,11 @@ public class Main {
         return c.confirmAssistance(passengerID);
     }
 
-    public void showOrderEntryLists(){
+    public void showOrderEntryList(){
         System.out.println(c.generateEntryList());
+    }
+
+    public void showOrderExistList(){
+        System.out.println(c.addToExistList());
     }
 }
