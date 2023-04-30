@@ -4,8 +4,6 @@ import model.Controller;
 
 import java.util.Scanner;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
 public class Main {
     private static Scanner input;
     private Controller c;
@@ -22,7 +20,7 @@ public class Main {
     }
 
     public void displayStartMenu() {
-        System.out.print("1) Import archive\n2) Confirm passenger assistance \n3)Generate ordered entry list \n4)Generate ordered exit list \n5) Exit\nSelected: ");
+        System.out.print("1)Import archive \n2)Confirm passenger assistance \n3)Generate ordered entry list \n4)Generate ordered exit list \n5) Exit\nSelected: ");
         int option = input.nextInt();
         executeOption(option);
     }

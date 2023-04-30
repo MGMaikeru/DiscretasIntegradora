@@ -42,7 +42,12 @@ public class Controller {
     }
 
     public String generateEntryList(){
-        String list = entryOrder.printArray();
+        String list = "";
+        int position = 1;
+        entryOrder.heapSort();
+        for (int i = entryOrder.getArray().size()-1; i >= 0; i--){
+            list += (position++) + ") " +entryOrder.getArray().get(i).toString() + "\n";
+        }
 
         if (!list.equals("")){
             return list;

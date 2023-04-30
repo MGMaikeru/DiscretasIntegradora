@@ -66,10 +66,10 @@ public class Passenger implements Comparable<Passenger> {
     @Override
     public int compareTo(Passenger o) {
         if (this.priority == o.getPriority()){
-            System.out.println("Prioridad igual, entonces mi hora es igual a:" + ((this.priority - o.getPriority()) - (confirmationHour.compareTo(o.getConfirmationHour()))));
+
             return (this.priority - o.getPriority()) - (confirmationHour.compareTo(o.getConfirmationHour()));
         }
-        System.out.println("Mi indice de prioridad es" + (this.priority - o.getPriority()));
+
         return this.priority - o.getPriority();
     }
 }
