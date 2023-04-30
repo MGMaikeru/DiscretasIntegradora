@@ -6,7 +6,7 @@ public class Passenger implements Comparable<Passenger> {
     private int priority;
     private String id;
     private String section;
-    private boolean isConfirmed;
+    public boolean isConfirmed;
     private String confirmationHour;
     private String row;
     private String column;
