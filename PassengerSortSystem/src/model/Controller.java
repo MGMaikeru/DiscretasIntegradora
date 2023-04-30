@@ -47,8 +47,8 @@ public class Controller {
         StringBuilder list = new StringBuilder();
         int position = 1;
         entryOrder.heapSort();
-        for (Passenger passenger : entryOrder.getArray()) {
-            list.append(position++).append(") ").append(passenger.toString()).append("\n");
+        for (int i = entryOrder.getArray().size()-1; i >= 0; i--){
+            list.append(position++).append(") ").append(entryOrder.getArray().get(i).toString()).append("\n");
         }
 
         if (list.length() > 0) {
