@@ -85,7 +85,7 @@ public class HashMap<V, K extends Comparable<K>> extends IHashTable<V, K> {
     }
 
     private int hash1(K key) {
-        double A = 0.6180339887; // número áureo
+        double A = 0.6180339887; //Golden number
         int hashValue = key.hashCode();
         hashValue = (int) ((hashValue * A - Math.floor(hashValue * A)) * capacity);
         return hashValue;
@@ -117,13 +117,13 @@ public class HashMap<V, K extends Comparable<K>> extends IHashTable<V, K> {
             int i = 1;
             int newIndex = 0;
             boolean isAdded = false;
-            while (isAdded = false) {
+            while (!isAdded) {
                 newIndex = (hash1(key) + i * hash2(key)) % table.size();
                 if (table.get(newIndex) == null) {
                     table.set(index, entry);
                     size++;
                     isAdded = true;
-                    System.out.println("El objeto se almaceno en:" + newIndex);
+                    System.out.println("The object is stored in:" + newIndex);
                 }
                 i++;
             }

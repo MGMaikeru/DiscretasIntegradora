@@ -1,17 +1,12 @@
 package model;
 
-import exception.DuplicateIdException;
-import exception.DuplicateSeatException;
-import exception.EmptyFieldException;
-import exception.PassengerAlreadyConfirmedException;
+import exception.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
+import java.util.*;
 
 import static java.lang.Integer.parseInt;
 
@@ -49,22 +44,22 @@ public class Controller {
     }
 
     public String generateEntryList(){
-        String list = "";
+        StringBuilder list = new StringBuilder();
         int position = 1;
         entryOrder.heapSort();
-        for (int i = entryOrder.getArray().size()-1; i >= 0; i--){
-            list += (position++) + ") " +entryOrder.getArray().get(i).toString() + "\n";
+        for (Passenger passenger : entryOrder.getArray()) {
+            list.append(position++).append(") ").append(passenger.toString()).append("\n");
         }
 
-        if (!list.equals("")){
-            return list;
+        if (list.length() > 0) {
+            return list.toString();
         }
         return "There aren´t confirmed passengers yet";
     }
 
     public String addToExistList(){
         int size = 0;
-        String list = "";
+        StringBuilder list = new StringBuilder();
         ArrayList<Passenger> confirmedPassengers = new ArrayList<>(entryOrder.getArray());
 
         if (confirmedPassengers.size() == 0){
@@ -80,12 +75,12 @@ public class Controller {
 
         try {
             for (int i = 0; i < size; i++){
-                list += i + 1 + ") " + exitOrder.pop().toString() + "\n";
+                list.append(i + 1).append(") ").append(exitOrder.pop().toString()).append("\n");
             }
         }catch (EmptyFieldException e){
-
+            e.printStackTrace();
         }
-        return list;
+        return list.toString();
     }
 
     public String importDataFromCSV(){
@@ -99,8 +94,6 @@ public class Controller {
             BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
 
             CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter('|'));
-
-            ArrayList<Passenger> temporalList = new ArrayList<>();
 
             for (CSVRecord o: parser) {
                 if (o.getRecordNumber() != 1){
@@ -141,7 +134,7 @@ public class Controller {
 
     private int calculatePriority(int age, String handicapped, String pregnancy, String section){
         int priority = 0;
-        if (age<110 || age>12){
+        if (age < 110 && age > 12){
 
             if (section.equals("FirstClass")){
                 priority += 60;

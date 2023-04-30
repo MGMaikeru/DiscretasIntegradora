@@ -38,18 +38,18 @@ public class Stack<T> {
 
     public StackNode<T> pop2()  {
         StackNode<T> toReturn = this.top;
-        top = top.getNext(); // El nuevo tope será el siguiente elemento de la pila
-        size--; // Se reduce el tamaño de la pila
+        top = top.getNext(); // The new top will be the next item on the stack
+        size--; // Reduce the size of the stack
         return toReturn;
     }
 
     public T pop() throws EmptyFieldException {
-        if (isEmpty()) { // Si la pila está vacía, no se puede hacer pop
+        if (isEmpty()) { // If the stack is empty, you can't pop
             throw new EmptyFieldException();
         }
         StackNode<T> toReturn = this.top;
-        top = top.getNext(); // El nuevo tope será el siguiente elemento de la pila
-        size--; // Se reduce el tamaño de la pila
+        top = top.getNext(); // The new top will be the next item on the stack
+        size--; // Reduce the size of the stack
         return toReturn.getValue();
     }
 
