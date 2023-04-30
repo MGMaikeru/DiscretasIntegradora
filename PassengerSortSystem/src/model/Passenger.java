@@ -8,8 +8,10 @@ public class Passenger implements Comparable<Passenger> {
     private String section;
     private boolean isConfirmed;
     private String confirmationHour;
+    private String row;
+    private String column;
 
-    public Passenger(String name, String id, int age, String section, int priority) {
+    public Passenger(String name, String id, int age, String section, int priority, String row, String column) {
         this.name = name;
         this.age = age;
         this.priority = priority;
@@ -17,6 +19,8 @@ public class Passenger implements Comparable<Passenger> {
         this.section = section;
         this.isConfirmed = false;
         this.confirmationHour = "";
+        this.row = row;
+        this.column = column;
     }
 
     public String getName() {
@@ -43,19 +47,29 @@ public class Passenger implements Comparable<Passenger> {
         return confirmationHour;
     }
 
+    public String getRow() {
+        return row;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
     public void confirmAssistance(){
         this.isConfirmed = true;
     }
 
     public String toString(){
-        return "Name: "+ this.name + "\nSection: " + this.section + "\nArrival time: " + this.confirmationHour + "\nID: " + this.id + "\nAge: " + this.age + "\nPriority: " + this.priority + "\n";
+        return "Name: "+ this.name + "\nPosition: " + this.row + this.column +"\nSection: " + this.section + "\nArrival time: " + this.confirmationHour + "\nID: " + this.id + "\nAge: " + this.age + "\nPriority: " + this.priority + "\n";
     }
 
     @Override
     public int compareTo(Passenger o) {
         if (this.priority == o.getPriority()){
-            return o.getConfirmationHour().hashCode() - confirmationHour.hashCode();
+            System.out.println("Prioridad igual, entonces mi hora es igual a:" + ((this.priority - o.getPriority()) - (confirmationHour.compareTo(o.getConfirmationHour()))));
+            return (this.priority - o.getPriority()) - (confirmationHour.compareTo(o.getConfirmationHour()));
         }
+        System.out.println("Mi indice de prioridad es" + (this.priority - o.getPriority()));
         return this.priority - o.getPriority();
     }
 }

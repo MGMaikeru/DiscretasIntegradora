@@ -7,9 +7,8 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 
 import static java.lang.Integer.parseInt;
 
@@ -18,10 +17,13 @@ public class Controller {
     private Heap<Passenger> entryOrder;
     private Stack<Passenger> exitOrder;
 
+    private boolean isLoaded;
+
     public Controller(){
         table = new HashMap<>(100);
         entryOrder = new Heap<>();
         exitOrder = new Stack<>();
+        isLoaded = false;
     }
 
     public String confirmAssistance(String id){
@@ -51,18 +53,22 @@ public class Controller {
     public String addToExistList(){
         int size = 0;
         String list = "";
-        for (int i = 0; i < entryOrder.getArray().size(); i++){
-            exitOrder.push(new StackNode<>( entryOrder.getArray().get(i)) );
-            size++;
+        ArrayList<Passenger> confirmedPassengers = new ArrayList<>(entryOrder.getArray());
+
+        if (confirmedPassengers.size() == 0){
+            return "There aren´t confirmed passengers!";
         }
 
-        if (size == 0){
-            return "There aren´t confirmed passengers!";
+        Collections.sort(confirmedPassengers, new CompareChairNumber());
+
+        for (Passenger confirmedPassenger : confirmedPassengers) {
+            exitOrder.push(new StackNode<>(confirmedPassenger));
+            size++;
         }
 
         try {
             for (int i = 0; i < size; i++){
-                list += i + ") " + exitOrder.pop().toString() + "\n";
+                list += i + 1 + ") " + exitOrder.pop().toString() + "\n";
             }
         }catch (EmptyFieldException e){
 
@@ -71,9 +77,11 @@ public class Controller {
     }
 
     public String importDataFromCSV(){
+        if (isLoaded){
+            return "The data base has already loaded!";
+        }
         try {
             File projectDir = new File(System.getProperty("user.dir"));
-            File dataDirectory = new File(projectDir.getName()+"/data");
             File result = new File(projectDir+"/data/data.csv");
             FileInputStream fis = new FileInputStream(result);
             BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
@@ -85,7 +93,9 @@ public class Controller {
             for (CSVRecord o: parser) {
                 if (o.getRecordNumber() != 1){
                     int priority = calculatePriority(parseInt(o.get(2)), o.get(3), o.get(4), o.get(5));
-                    Passenger newPassenger = new Passenger(o.get(0), o.get(1), parseInt(o.get(2)), o.get(5),priority);
+                    String row = o.get(6).charAt(0) + "";
+                    String column = o.get(6).charAt(1) + "";
+                    Passenger newPassenger = new Passenger(o.get(0), o.get(1), parseInt(o.get(2)), o.get(5),priority, row, column);
                     table.hashInsert(newPassenger, newPassenger.getId());
                     System.out.println("Name: " + newPassenger.getName() + "\n" + "ID: " + newPassenger.getId() + "\n" + "Age: " + newPassenger.getAge() + "\n" + "Priority: " + newPassenger.getPriority() + "\n");
                 }
@@ -96,6 +106,7 @@ public class Controller {
         }catch (IOException e){
             e.printStackTrace();
         }
+        isLoaded = true;
         return "Successful import!";
     }
 
