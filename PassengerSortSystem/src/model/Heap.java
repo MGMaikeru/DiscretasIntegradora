@@ -3,7 +3,7 @@ package model;
 import java.util.Collections;
 import java.util.ArrayList;
 
-public class Heap<T extends Comparable<T>> {
+public class Heap<T extends Comparable<T>> extends IPriorityQueue<T> {
 
     private int heapSize;
     private ArrayList<T> array;
@@ -16,6 +16,7 @@ public class Heap<T extends Comparable<T>> {
      this.array.add(object);
     }
 
+    @Override
     public T heapMaximum(){
         return array.get(0);
     }
@@ -32,6 +33,7 @@ public class Heap<T extends Comparable<T>> {
         return array;
     }
 
+    @Override
     public T heapExtractMax(){
         if (array.size() < 1) {
             System.out.println("heap underflow");
@@ -43,6 +45,7 @@ public class Heap<T extends Comparable<T>> {
         return max;
     }
 
+    @Override
     public void heapIncreaseKey(int i, T key){
         if (key.compareTo( array.get(i) ) < 0 ) {
             System.out.println("New key is smaller than current key");
@@ -55,6 +58,7 @@ public class Heap<T extends Comparable<T>> {
         }
     }
 
+    @Override
     public void maxHeapInsert(T key){
         array.add(key);
         heapIncreaseKey(array.size()-1, key);
