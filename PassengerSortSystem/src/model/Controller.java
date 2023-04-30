@@ -1,6 +1,9 @@
 package model;
 
+import exception.DuplicateIdException;
+import exception.DuplicateSeatException;
 import exception.EmptyFieldException;
+import exception.PassengerAlreadyConfirmedException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -26,14 +29,18 @@ public class Controller {
         isLoaded = false;
     }
 
-    public String confirmAssistance(String id){
+    public String confirmAssistance(String id) throws PassengerAlreadyConfirmedException {
         Passenger passenger = table.hashSearch(id);
         if (passenger == null){
             return "Passenger ID hasn't been find.";
         }
+        if (passenger.isConfirmed()) {
+            throw new PassengerAlreadyConfirmedException("Passenger has already been confirmed.");
+        }
         passenger.confirmAssistance();
         passenger.setConfirmationHour(getActuallyDate());
         addToEntryList(passenger);
+
         return passenger + "\nPassenger has been confirmed assistance.\n";
     }
 
@@ -101,11 +108,20 @@ public class Controller {
                     String row = o.get(6).charAt(0) + "";
                     String column = o.get(6).charAt(1) + "";
                     Passenger newPassenger = new Passenger(o.get(0), o.get(1), parseInt(o.get(2)), o.get(5),priority, row, column);
-                    table.hashInsert(newPassenger, newPassenger.getId());
-                    System.out.println("Name: " + newPassenger.getName() + "\n" + "ID: " + newPassenger.getId() + "\n" + "Age: " + newPassenger.getAge() + "\n" + "Priority: " + newPassenger.getPriority() + "\n");
+                    try {
+                        if (table.hashSearch(newPassenger.getId()) != null) {
+                            throw new DuplicateIdException("Duplicate ID found: " + newPassenger.getId() + ". Passenger: " + newPassenger.getName());
+                        }
+                        if (table.hashSearch(newPassenger.getRow()) != null && table.hashSearch(newPassenger.getColumn()) != null) {
+                            throw new DuplicateSeatException("Duplicate seat for passenger: " + newPassenger.getName() + " at: Row: " + newPassenger.getRow() +" Column: "+ newPassenger.getColumn());
+                        }
+                        table.hashInsert(newPassenger, newPassenger.getId());
+                        System.out.println("Name: " + newPassenger.getName() + "\n" + "ID: " + newPassenger.getId() + "\n" + "Age: " + newPassenger.getAge() + "\n" + "Priority: " + newPassenger.getPriority() + "\n");
+                    }catch (DuplicateIdException e){
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
-
         }catch (FileNotFoundException e){
             e.printStackTrace();
         }catch (IOException e){
