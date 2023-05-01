@@ -1,8 +1,8 @@
 # DiscretasIntegradora
 Developers:
 
-Alexandro Cabezas - .
-David Henao - .
+Alexandro Cabezas - A00396011.
+David Henao - A00394033.
 Miguel Gonzalez - A00395687.
 
 Important!
