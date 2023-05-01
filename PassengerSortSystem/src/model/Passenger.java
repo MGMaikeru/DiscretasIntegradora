@@ -55,6 +55,10 @@ public class Passenger implements Comparable<Passenger> {
         return column;
     }
 
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
     public void confirmAssistance(){
         this.isConfirmed = true;
     }

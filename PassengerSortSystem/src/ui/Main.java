@@ -1,5 +1,6 @@
 package ui;
 
+import exception.PassengerAlreadyConfirmedException;
 import model.Controller;
 
 import java.util.Scanner;
@@ -56,7 +57,11 @@ public class Main {
         System.out.println("Type the passenger ID: ");
         input.nextLine();
         String passengerID = input.nextLine();
-        return c.confirmAssistance(passengerID);
+        try {
+            return c.confirmAssistance(passengerID);
+        } catch (PassengerAlreadyConfirmedException e) {
+               return e.getMessage();
+        }
     }
 
     public void showOrderEntryList(){

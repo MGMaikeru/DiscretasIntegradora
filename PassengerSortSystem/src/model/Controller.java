@@ -1,14 +1,12 @@
 package model;
 
-import exception.EmptyFieldException;
+import exception.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
+import java.util.*;
 
 import static java.lang.Integer.parseInt;
 
@@ -26,14 +24,18 @@ public class Controller {
         isLoaded = false;
     }
 
-    public String confirmAssistance(String id){
+    public String confirmAssistance(String id) throws PassengerAlreadyConfirmedException {
         Passenger passenger = table.hashSearch(id);
         if (passenger == null){
             return "Passenger ID hasn't been find.";
         }
+        if (passenger.isConfirmed()) {
+            throw new PassengerAlreadyConfirmedException("Passenger has already been confirmed.");
+        }
         passenger.confirmAssistance();
         passenger.setConfirmationHour(getActuallyDate());
         addToEntryList(passenger);
+
         return passenger + "\nPassenger has been confirmed assistance.\n";
     }
 
@@ -42,22 +44,22 @@ public class Controller {
     }
 
     public String generateEntryList(){
-        String list = "";
+        StringBuilder list = new StringBuilder();
         int position = 1;
         entryOrder.heapSort();
         for (int i = entryOrder.getArray().size()-1; i >= 0; i--){
-            list += (position++) + ") " +entryOrder.getArray().get(i).toString() + "\n";
+            list.append(position++).append(") ").append(entryOrder.getArray().get(i).toString()).append("\n");
         }
 
-        if (!list.equals("")){
-            return list;
+        if (list.length() > 0) {
+            return list.toString();
         }
         return "There aren´t confirmed passengers yet";
     }
 
     public String addToExistList(){
         int size = 0;
-        String list = "";
+        StringBuilder list = new StringBuilder();
         ArrayList<Passenger> confirmedPassengers = new ArrayList<>(entryOrder.getArray());
 
         if (confirmedPassengers.size() == 0){
@@ -73,12 +75,12 @@ public class Controller {
 
         try {
             for (int i = 0; i < size; i++){
-                list += i + 1 + ") " + exitOrder.pop().toString() + "\n";
+                list.append(i + 1).append(") ").append(exitOrder.pop().toString()).append("\n");
             }
         }catch (EmptyFieldException e){
-
+            e.printStackTrace();
         }
-        return list;
+        return list.toString();
     }
 
     public String importDataFromCSV(){
@@ -93,19 +95,26 @@ public class Controller {
 
             CSVParser parser = new CSVParser(reader, CSVFormat.DEFAULT.withDelimiter('|'));
 
-            ArrayList<Passenger> temporalList = new ArrayList<>();
-
             for (CSVRecord o: parser) {
                 if (o.getRecordNumber() != 1){
                     int priority = calculatePriority(parseInt(o.get(2)), o.get(3), o.get(4), o.get(5));
                     String row = o.get(6).charAt(0) + "";
                     String column = o.get(6).charAt(1) + "";
                     Passenger newPassenger = new Passenger(o.get(0), o.get(1), parseInt(o.get(2)), o.get(5),priority, row, column);
-                    table.hashInsert(newPassenger, newPassenger.getId());
-                    System.out.println("Name: " + newPassenger.getName() + "\n" + "ID: " + newPassenger.getId() + "\n" + "Age: " + newPassenger.getAge() + "\n" + "Priority: " + newPassenger.getPriority() + "\n");
+                    try {
+                        if (table.hashSearch(newPassenger.getId()) != null) {
+                            throw new DuplicateIdException("Duplicate ID found: " + newPassenger.getId() + ". Passenger: " + newPassenger.getName());
+                        }
+                        if (table.hashSearch(newPassenger.getRow()) != null && table.hashSearch(newPassenger.getColumn()) != null) {
+                            throw new DuplicateSeatException("Duplicate seat for passenger: " + newPassenger.getName() + " at: Row: " + newPassenger.getRow() +" Column: "+ newPassenger.getColumn());
+                        }
+                        table.hashInsert(newPassenger, newPassenger.getId());
+                        System.out.println("Name: " + newPassenger.getName() + "\n" + "ID: " + newPassenger.getId() + "\n" + "Age: " + newPassenger.getAge() + "\n" + "Priority: " + newPassenger.getPriority() + "\n");
+                    }catch (DuplicateIdException e){
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
-
         }catch (FileNotFoundException e){
             e.printStackTrace();
         }catch (IOException e){
@@ -125,7 +134,7 @@ public class Controller {
 
     private int calculatePriority(int age, String handicapped, String pregnancy, String section){
         int priority = 0;
-        if (age<110 || age>12){
+        if (age < 110 && age > 12){
 
             if (section.equals("FirstClass")){
                 priority += 60;
