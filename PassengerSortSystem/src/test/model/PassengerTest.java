@@ -1,10 +1,8 @@
-package model;
+package test.model;
 
-
+import model.*;
 import exception.InvalidNumberException;
 import org.junit.jupiter.api.Test;
-
-import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.exceptions;
 import static org.junit.jupiter.api.Assertions.*;
 public class PassengerTest {
     @Test

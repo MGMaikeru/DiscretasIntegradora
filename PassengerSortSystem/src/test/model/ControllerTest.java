@@ -1,5 +1,6 @@
-package model;
+package test.model;
 
+import exception.PassengerAlreadyConfirmedException;
 import model.Controller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,12 @@ public class ControllerTest {
         setup1();
         String id = "123";
         String ex = "Passenger ID hasn't been found.";
-        String a = controller.confirmAssistance(id);
+        String a = null;
+        try {
+            a = controller.confirmAssistance(id);
+        } catch (PassengerAlreadyConfirmedException e) {
+            throw new RuntimeException(e);
+        }
         assertEquals(ex, a);
     }
 
